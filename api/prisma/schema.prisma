@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")    // NeonDB pooled connection (runtime)
+  directUrl = env("DIRECT_URL")      // NeonDB direct connection (migrations only)
+}
+
+model Country {
+  id     String  @id @default(uuid())
+  code   String  @unique
+  name   String
+  states State[]
+}
+
+model State {
+  id        String            @id @default(uuid())
+  code      String            @unique
+  name      String
+  countryId String
+  country   Country           @relation(fields: [countryId], references: [id])
+  districts District[]
+  access    UserStateAccess[]
+}
+
+model District {
+  id           String        @id @default(uuid())
+  code         String        @unique
+  name         String
+  stateId      String
+  state        State         @relation(fields: [stateId], references: [id])
+  subDistricts SubDistrict[]
+
+  @@index([stateId])
+}
+
+model SubDistrict {
+  id         String    @id @default(uuid())
+  code       String    @unique
+  name       String
+  districtId String
+  district   District  @relation(fields: [districtId], references: [id])
+  villages   Village[]
+
+  @@index([districtId])
+}
+
+model Village {
+  id            String      @id @default(uuid())
+  code          String      @unique
+  name          String
+  subDistrictId String
+  subDistrict   SubDistrict @relation(fields: [subDistrictId], references: [id])
+
+  @@index([subDistrictId])
+  @@index([name])          // upgraded to GIN trigram via setup_indexes.sql
+}
+
+model User {
+  id           String            @id @default(uuid())
+  email        String            @unique
+  passwordHash String
+  businessName String
+  phone        String?
+  gstNumber    String?
+  planType     String            @default("Free")   // Free | Premium | Pro | Unlimited
+  role         String            @default("USER")   // USER | ADMIN
+  status       String            @default("PENDING_APPROVAL") // PENDING_APPROVAL | ACTIVE | SUSPENDED
+  deletedAt    DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  apiKeys      ApiKey[]
+  stateAccess  UserStateAccess[]
+  apiLogs      ApiLog[]
+}
+
+model ApiKey {
+  id         String    @id @default(uuid())
+  name       String
+  key        String    @unique  // ak_[32hex] stored plaintext for O(1) lookup
+  secretHash String             // bcrypt hash of as_[32hex] secret
+  status     String    @default("Active")  // Active | Revoked
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  createdAt  DateTime  @default(now())
+  lastUsed   DateTime?
+  expiresAt  DateTime?
+  apiLogs    ApiLog[]
+}
+
+model UserStateAccess {
+  userId  String
+  stateId String
+  user    User   @relation(fields: [userId], references: [id])
+  state   State  @relation(fields: [stateId], references: [id])
+
+  @@id([userId, stateId])
+}
+
+model ApiLog {
+  id           String   @id @default(uuid())
+  endpoint     String
+  method       String   @default("GET")
+  responseTime Int
+  statusCode   Int
+  ipAddress    String?
+  userId       String?
+  apiKeyId     String?
+  user         User?    @relation(fields: [userId], references: [id])
+  apiKey       ApiKey?  @relation(fields: [apiKeyId], references: [id])
+  createdAt    DateTime @default(now())
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([apiKeyId, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+}
