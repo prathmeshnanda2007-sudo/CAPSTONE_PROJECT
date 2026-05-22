@@ -8,7 +8,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc --outDir dist --declaration false || true",
     "start": "tsx src/server.ts",
-    "start:prod": "node dist/server.js",
+    "start:prod": "node dist/src/server.js",
     "db:migrate": "prisma migrate deploy",
     "db:generate": "prisma generate"
   },
