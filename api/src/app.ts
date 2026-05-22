@@ -20,18 +20,33 @@ app.use(compression());
 
 // ─── CORS ─────────────────────────────────────────────────────────────────
 const allowedOrigins = [
-  process.env.FRONTEND_URL ?? 'http://localhost:5173',
-  process.env.DEMO_URL     ?? 'http://localhost:5174',
-];
+  process.env.FRONTEND_URL,
+  process.env.DEMO_URL,
+  'http://localhost:5173',
+  'http://localhost:5174',
+].filter(Boolean);
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (curl, mobile apps, Postman)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS: origin ${origin} not allowed`));
+      // Allow all if FRONTEND_URL is '*'
+      if (process.env.FRONTEND_URL === '*') {
+        return callback(null, true);
       }
+      // Allow requests with no origin (curl, mobile apps, Postman)
+      if (!origin) {
+        return callback(null, true);
+      }
+      // Allow exact matches
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      // Allow any Vercel deployment URL
+      if (origin.endsWith('.vercel.app')) {
+        return callback(null, true);
+      }
+      
+      callback(new Error(`CORS: origin ${origin} not allowed`));
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'X-API-Secret'],
