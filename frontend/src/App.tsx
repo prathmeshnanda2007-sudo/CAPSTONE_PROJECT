@@ -12,6 +12,7 @@ import { Demo } from './pages/Demo';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminUsers } from './pages/admin/AdminUsers';
 import { AdminLogs } from './pages/admin/AdminLogs';
+import { Landing } from './pages/Landing';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,7 +29,8 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Router>
         <Routes>
-          {/* ─── Public Demo (no auth required) ──────────────────────── */}
+          {/* ─── Public Landing & Demo ───────────────────────────────── */}
+          <Route path="/" element={<Landing />} />
           <Route path="/demo" element={<Demo />} />
 
           {/* ─── Public Auth ──────────────────────────────────────────── */}
@@ -62,12 +64,9 @@ function App() {
             <Route path="logs"  element={<AdminLogs />} />
           </Route>
 
-          {/* ─── Root redirect ────────────────────────────────────────── */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
           <Route path="*" element={
             <div className="min-h-screen bg-[var(--background)] text-white flex items-center justify-center text-2xl font-bold">
-              404 Not Found
+               404 Not Found
             </div>
           } />
         </Routes>

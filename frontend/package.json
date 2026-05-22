@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.100.11",
+    "@types/three": "^0.184.1",
     "autoprefixer": "^10.5.0",
     "axios": "^1.15.2",
     "lucide-react": "^1.11.0",
@@ -20,6 +21,7 @@
     "react-router-dom": "^7.14.2",
     "recharts": "^3.8.1",
     "tailwindcss": "^4.2.4",
+    "three": "^0.184.0",
     "zustand": "^5.0.13"
   },
   "devDependencies": {
