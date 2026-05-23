@@ -70,7 +70,12 @@ export const Register = () => {
       });
       setSuccess(true);
     } catch (err: any) {
-      const msg = err.response?.data?.error?.message || 'Registration failed. Please try again.';
+      let msg = 'Registration failed. Please try again.';
+      if (!err.response) {
+        msg = 'Network error: Cannot connect to server. Please try again.';
+      } else if (err.response.data?.error?.message) {
+        msg = err.response.data.error.message;
+      }
       setError(msg);
     } finally {
       setLoading(false);
@@ -80,9 +85,7 @@ export const Register = () => {
   if (success) {
     return (
       <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4">
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-emerald-600/10 blur-[120px]" />
-        </div>
+        {/* Ambient background removed */}
         <div className="relative w-full max-w-md animate-fade-in text-center">
           <div className="glass-card rounded-2xl p-10">
             <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
@@ -107,11 +110,7 @@ export const Register = () => {
 
   return (
     <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4 py-10">
-      {/* Ambient gradient blobs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-600/10 blur-[120px]" />
-        <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-blue-600/10 blur-[120px]" />
-      </div>
+      {/* Ambient background removed */}
 
       <div className="relative w-full max-w-md animate-fade-in">
         {/* Logo */}

@@ -36,7 +36,12 @@ export const Login = () => {
       login(token, user);
       navigate(from, { replace: true });
     } catch (err: any) {
-      const msg = err.response?.data?.error?.message || 'Invalid email or password.';
+      let msg = 'Invalid email or password.';
+      if (!err.response) {
+        msg = 'Network error: Cannot connect to server. Please try again.';
+      } else if (err.response.data?.error?.message) {
+        msg = err.response.data.error.message;
+      }
       setError(msg);
     } finally {
       setLoading(false);
@@ -45,11 +50,7 @@ export const Login = () => {
 
   return (
     <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4">
-      {/* Ambient gradient blobs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-blue-600/10 blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-600/10 blur-[120px]" />
-      </div>
+      {/* Ambient gradient blobs removed */}
 
       <div className="relative w-full max-w-md animate-fade-in">
         {/* Logo */}

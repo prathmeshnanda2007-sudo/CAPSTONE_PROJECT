@@ -14,6 +14,9 @@ import { AdminUsers } from './pages/admin/AdminUsers';
 import { AdminLogs } from './pages/admin/AdminLogs';
 import { Landing } from './pages/Landing';
 
+import { Logs } from './pages/Logs';
+import { Settings } from './pages/Settings';
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -44,8 +47,8 @@ function App() {
             <Route index          element={<Overview />} />
             <Route path="explorer" element={<DataExplorer />} />
             <Route path="keys"    element={<ApiKeys />} />
-            <Route path="logs"    element={<div className="p-8 text-white">Logs coming soon…</div>} />
-            <Route path="settings" element={<div className="p-8 text-white">Settings coming soon…</div>} />
+            <Route path="logs"    element={<Logs />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
 
           {/* ─── Protected Docs ───────────────────────────────────────── */}
